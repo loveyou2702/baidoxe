@@ -39,9 +39,9 @@ bool flag_hongngoai2=false;
 
 //
 vector<pair<unsigned long, unsigned long>> danhsachthe = {
-  {4294949378, 0},
-  {4294967007, 0},
-  {4294966239, 0}
+  {ID1, 0},
+  {ID2, 0},
+  {ID3, 0}
 };// khai báo danh sách các cặp id thẻ và xe
 unsigned long IDThe();
 bool checkUID(unsigned long UID, unsigned long ID);
@@ -70,7 +70,8 @@ void loop() {
   digitalWrite(trig,LOW);// tắt xung chân trig
   thoigian=pulseIn(echo,HIGH);// trả về thời gian gặp vật
   khoangcach=int(thoigian *0.034 / 2 );//tính khoảng cách
-  
+  if(flag_sieuam==true) servo1.write(90);
+  if(flag_sieuam==false) servo1.write(0);
   static bool xe_da_duoc_quet = false;
   if(khoangcach<8 && xe_da_duoc_quet==false){
     unsigned long idthe1 = IDThe();
@@ -81,16 +82,23 @@ void loop() {
         for(int i=0;i<danhsachthe.size();i++){
           if(danhsachthe[i].first==idthe1){
             danhsachthe[i].second=idthe2;
-            servo1.write(90);
+            Serial.println(idthe1);//không thấy lệnh này hoạt động
+            Serial.println(idthe2);
+            flag_sieuam=true;
             xe_da_duoc_quet=true;
+            break;
           }
         }
       }
     }
   }
-  
+  if(khoangcach>=8){
+    xe_da_duoc_quet=false;
+  }
+  if(giatrihongngoai1==0){
+    flag_sieuam=false;
+  } 
 }
-
 
 unsigned long IDThe() {
   if (!mfrc522.PICC_IsNewCardPresent()) return 0;
